@@ -10,6 +10,7 @@ import math
 import numpy as np
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import MinMaxScaler
+from shapely.geometry import Point
 
 
 ######################################################################
@@ -51,4 +52,20 @@ def dist(a, b):
     for i in range(len(a)):
         sum = sum + (a[i] - b[i])**2
     return math.sqrt(sum)
+
+def nearest_neighbors(X_train, X_corpus, cell, k):
+    counts = np.zeros(len(X_corpus), dtype=np.int64) 
+    trN = 0
+    for i in range(len(X_train)):
+        if cell.contains(Point(X_train[i])):
+            trN += 1
+            D = np.empty(len(X_corpus))
+            for j in range(len(X_corpus)):
+                D[j] = dist(X_corpus[j], X_train[i])
+                
+            # find the index of the nearest neighbor
+            near_loop = np.argsort(D)[:k]
+            for j in near_loop:
+                counts[j] += 1
+    return (counts, trN)
 

@@ -6,7 +6,7 @@ Created on Mon Jul  6 17:27:38 2020
 @author: ttonteri
 """
 
-from utility import generate_toy_data, dist
+from utility import generate_toy_data, dist, nearest_neighbors
 from mrpt import MRPT
 
 import numpy as np
@@ -16,26 +16,8 @@ from shapely.geometry.polygon import Polygon
 from shapely.geometry import Point
 
 
-def nearest_neighbors(X_train, X_corpus, cell, k):
-    counts = np.zeros(len(X_corpus), dtype=np.int64) 
-    trN = 0
-    for i in range(len(X_train)):
-        if cell.contains(Point(X_train[i])):
-            trN += 1
-            D = np.empty(len(X_corpus))
-            for j in range(len(X_corpus)):
-                D[j] = dist(X_corpus[j], X_train[i])
-                
-            # find the index of the nearest neighbor
-            near_loop = np.argsort(D)[:k]
-            for j in near_loop:
-                counts[j] += 1
-    return (counts, trN)
-
-
 ######################################################################
 # Main plotting code
-
 
 training_set_sizes = [50, 250, 1000]
 k = 5   # set k=0 to just show the data
@@ -119,7 +101,7 @@ for n in training_set_sizes:
     plt.scatter(X_test[:,0], X_test[:,1], marker='*',
                 s=220, vmin=0, vmax=1, facecolors='#FFF681', edgecolors='k')
     
-    plt.savefig("fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency.pdf")
+    plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency.pdf")
 
     px, py = cell.exterior.xy
     plt.plot(px, py) # color='#3977AF'
@@ -136,10 +118,10 @@ for n in training_set_sizes:
         if cell.contains(Point(X_train[i])):
             plt.scatter(X_train[i,0], X_train[i,1], c='#FFAFEC', s=30, edgecolors='k')
 
-    plt.savefig("fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-highlighted.pdf")
+    plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-highlighted.pdf")
             
     plt.scatter(X_corpus[ann,0], X_corpus[ann,1], marker='o', 
                 cmap=cm, s=51, vmin=0, vmax=1, c='#FFF681', edgecolors='k')
 
-    plt.savefig("fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-no_labels.pdf")
+    plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-no_labels.pdf")
 
