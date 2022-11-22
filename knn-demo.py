@@ -6,58 +6,25 @@ Created on Mon Jul  6 17:27:38 2020
 @author: ttonteri
 """
 
-import math
+from utility import generate_toy_data, create_polygon, dist, nearest_neighbors
+
 import numpy as np
-from sklearn.datasets import make_blobs
-from sklearn.preprocessing import MinMaxScaler
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
-from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
-def polar_to_xy(x0, y0, a, r):
-    return (x0 + math.cos(a)*r, y0 + math.sin(a)*r)
 
-def create_polygon(x0, y0, corners, r):
-    angle_inc = np.random.dirichlet(([2]*corners), 1)[0,:] * math.pi*2
-    angles = [sum(angle_inc[0:(i+1)]) for i in range(corners)]
-    rs = np.random.normal(np.sqrt(r), r/5, corners)**2
-    cs = zip(angles, rs)
-    xy = [polar_to_xy(x0, y0, a, r) for (a,r) in cs]
-    return xy
-
-
-# sample random data from two classes
-
-seed = 15 #np.random.randint(10000)
-np.random.seed(seed)  #15 9
-print(seed)
-
-X, Y = make_blobs(n_samples=25, n_features=2, centers=1, center_box=(-2,2))
-
-# scale the data so that all values are between 0.0 and 1.0
-
-X = MinMaxScaler().fit(X).transform(X)
-
-mask = (X[:,0]<0.7) | (X[:,1]<0.7)
-X_train, Y_train = (X[mask], Y[mask])
+k = 5   # set k=0 to just show the data
+seed = 15 
+X_train, Y_train = generate_toy_data(seed)       
 X_test, Y_test = (np.array([[.5,.5]]), np.array([0]))
 
 # made up partition element
 cell = Polygon(create_polygon(X_test[0,0]-.145, X_test[0,1]+.0, 6, .295))
 
-# distance function
-
-def dist(a, b):
-    sum = 0
-    for i in range(len(a)):
-        sum = sum + (a[i] - b[i])**2
-    return math.sqrt(sum)
-
 # place-holder for the predicted classes
 Y_predict = np.empty(len(Y_test), dtype=np.int64)
 
-k = 5   # set k=0 to just show the data
 
 for i in range(len(X_test)):
     # calculate the distances to all training points
@@ -69,22 +36,7 @@ for i in range(len(X_test)):
     near = np.argsort(D)[:k]
 
 # do the nearest neighbors for the data in the cell
-
-counts = np.zeros(len(X_train), dtype=np.int64) 
-trN = 0
-for i in range(len(X_train)):
-    if cell.contains(Point(X_train[i])):
-        trN += 1
-        D = np.empty(len(X_train))
-        for j in range(len(X_train)):
-            D[j] = dist(X_train[j], X_train[i])
-            
-        # find the index of the nearest neighbor
-        near_loop = np.argsort(D)[:k]
-        for j in near_loop:
-            counts[j] += 1
-
-#Y_train[near] = 2
+counts, trN = nearest_neighbors(X_train, X_train, cell, k)
 
 # plot the chart
 fig = plt.figure(figsize=(6,6))
@@ -135,4 +87,4 @@ plt.scatter(X_train[:,0], X_train[:,1], c=Y_train, marker='o',
 px, py = cell.exterior.xy
 plt.plot(px, py) # #3977AF
 
-plt.savefig("fig2-new.pdf")
+plt.savefig("fig/fig2-new.pdf")
