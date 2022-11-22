@@ -12,11 +12,13 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.colors import ListedColormap
 from shapely.geometry.polygon import Polygon
+from shapely.geometry import Point
 
 
-k = 5   # set k=0 to just show the data
+k = 5   
+tau = 0.2
 seed = 15 
-X_train, Y_train = generate_toy_data(seed)       
+X_corpus, Y_train = generate_toy_data(seed)       
 X_test, Y_test = (np.array([[.5,.5]]), np.array([0]))
 
 # made up partition element
@@ -28,15 +30,15 @@ Y_predict = np.empty(len(Y_test), dtype=np.int64)
 
 for i in range(len(X_test)):
     # calculate the distances to all training points
-    D = np.empty(len(X_train))
-    for j in range(len(X_train)):
-        D[j] = dist(X_train[j], X_test[i])
+    D = np.empty(len(X_corpus))
+    for j in range(len(X_corpus)):
+        D[j] = dist(X_corpus[j], X_test[i])
             
     # find the index of the nearest neighbor
     near = np.argsort(D)[:k]
 
 # do the nearest neighbors for the data in the cell
-counts, trN = nearest_neighbors(X_train, X_train, cell, k)
+counts, trN = nearest_neighbors(X_corpus, X_corpus, cell, k)
 
 # plot the chart
 fig = plt.figure(figsize=(6,6))
@@ -44,7 +46,7 @@ fig.set_tight_layout(True)
 ax = plt.gca()
 ax.set_axis_off()
 plt.tick_params(
-    axis='both',          # changes apply to the x-axis
+    axis='both',       # changes apply to the x-axis
     which='both',      # both major and minor ticks are affected
     left=False,
     labelleft=False,
@@ -52,39 +54,42 @@ plt.tick_params(
     top=False,         # ticks along the top edge are off
     labelbottom=False) 
 
-#fig.set_facecolor('#EBE9EF')
-#cm = ListedColormap(['#5EC798', '#46479D'])
-
-#ax.set_facecolor('#FCFDF1')
 cm = ListedColormap(['#86B853', '#FFF681'])
 
-show_counts = False
-
 S = np.argsort(-counts)[:k]
-#Y_train = [1 if c>2 else 0 for c in counts]
-#Y_train[S] = 1
 
-if k > 0:
-    plt.scatter(X_train[near,0], X_train[near,1], marker='o', 
-                cmap=cm, s=301, c='#F0B27A', edgecolors=None)
-    plt.scatter(X_test[:,0], X_test[:,1], c=Y_predict, marker='*', 
-                cmap=cm, s=250, vmin=0, vmax=1, edgecolors='k')
-    if show_counts:
-        labs = [str(c)+'/'+str(trN) for c in counts]
-        for i in range(len(labs)):
-            plt.annotate(labs[i], xy=(X_train[i,0],X_train[i,1]), 
-                         xytext=(0,8), textcoords='offset points',
-                         fontsize=8,
-                         horizontalalignment='center', verticalalignment='bottom')
-
-else:
-    plt.scatter(X_test[:,0], X_test[:,1], marker='*',
-                s=220, vmin=0, vmax=1, facecolors='w', edgecolors='k')
-
-plt.scatter(X_train[:,0], X_train[:,1], c=Y_train, marker='o',
+plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
             cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+plt.scatter(X_test[:,0], X_test[:,1], c=Y_predict, marker='*', 
+            cmap=cm, s=250, vmin=0, vmax=1, edgecolors='k')
+
+plt.savefig("fig/fig2-plain.pdf")
+
+plt.scatter(X_corpus[near,0], X_corpus[near,1], marker='o', 
+            cmap=cm, s=301, c='#F0B27A', edgecolors=None)
+plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
+            cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+
+plt.savefig("fig/fig2-corpus.pdf")
 
 px, py = cell.exterior.xy
 plt.plot(px, py) # #3977AF
 
 plt.savefig("fig/fig2-new.pdf")
+
+candidate_set = counts / trN > tau
+if cell.contains(Point(X_train[i])):
+    
+plt.scatter(X_corpus[candidate_set,0], X_corpus[candidate_set,1], c='#FFF681',
+            marker='o', cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+
+plt.savefig("fig/fig2-candidate-set.pdf")
+
+labs = [str(c)+'/'+str(trN) for c in counts]
+for i in range(len(labs)):
+    plt.annotate(labs[i], xy=(X_corpus[i,0],X_corpus[i,1]), 
+                 xytext=(0,8), textcoords='offset points',
+                 fontsize=8,
+                 horizontalalignment='center', verticalalignment='bottom')
+
+plt.savefig("fig/fig2-counts.pdf")
