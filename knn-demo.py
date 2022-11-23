@@ -77,8 +77,10 @@ plt.plot(px, py) # #3977AF
 
 plt.savefig("fig/fig2-new.pdf")
 
-candidate_set = counts / trN > tau
-if cell.contains(Point(X_train[i])):
+candidate_set = np.full(len(X_corpus), False)
+for i in np.arange(len(X_corpus)):
+    if cell.contains(Point(X_corpus[i])):
+        candidate_set[i] = True
     
 plt.scatter(X_corpus[candidate_set,0], X_corpus[candidate_set,1], c='#FFF681',
             marker='o', cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
