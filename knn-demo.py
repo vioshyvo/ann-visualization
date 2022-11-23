@@ -24,10 +24,6 @@ X_test, Y_test = (np.array([[.5,.5]]), np.array([0]))
 # made up partition element
 cell = Polygon(create_polygon(X_test[0,0]-.145, X_test[0,1]+.0, 6, .295))
 
-# place-holder for the predicted classes
-Y_predict = np.empty(len(Y_test), dtype=np.int64)
-
-
 for i in range(len(X_test)):
     # calculate the distances to all training points
     D = np.empty(len(X_corpus))
@@ -41,6 +37,10 @@ for i in range(len(X_test)):
 counts, trN = nearest_neighbors(X_corpus, X_corpus, cell, k)
 
 # plot the chart
+cm = ListedColormap(['#86B853', '#FFF681'])
+msize_corpus = 51
+msize_neighbor = 250
+
 fig = plt.figure(figsize=(6,6))
 fig.set_tight_layout(True)
 ax = plt.gca()
@@ -54,21 +54,17 @@ plt.tick_params(
     top=False,         # ticks along the top edge are off
     labelbottom=False) 
 
-cm = ListedColormap(['#86B853', '#FFF681'])
-
-S = np.argsort(-counts)[:k]
-
 plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
-            cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
-plt.scatter(X_test[:,0], X_test[:,1], c=Y_predict, marker='*', 
-            cmap=cm, s=250, vmin=0, vmax=1, edgecolors='k')
+            cmap=cm, s=msize_corpus, vmin=0, vmax=1, edgecolors='k')
+plt.scatter(X_test[:,0], X_test[:,1], c=1, marker='*', 
+            cmap=cm, s=msize_neighbor, vmin=0, vmax=1, edgecolors='k')
 
 plt.savefig("fig/fig2-plain.pdf")
 
 plt.scatter(X_corpus[near,0], X_corpus[near,1], marker='o', 
             cmap=cm, s=301, c='#F0B27A', edgecolors=None)
 plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
-            cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+            cmap=cm, s=msize_corpus, vmin=0, vmax=1, edgecolors='k')
 
 plt.savefig("fig/fig2-corpus.pdf")
 
@@ -82,17 +78,14 @@ for i in np.arange(len(X_corpus)):
     if cell.contains(Point(X_corpus[i])):
         candidate_set[i] = True
     
-plt.scatter(X_corpus[candidate_set,0], X_corpus[candidate_set,1], c='#FFF681',
-            marker='o', cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+plt.scatter(X_corpus[:,0], X_corpus[:,1], c=candidate_set, marker='o',
+            cmap=cm, s=msize_corpus, vmin=0, vmax=1, edgecolors='k')
 
 plt.savefig("fig/fig2-candidate-set.pdf")
 
-plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
-            cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
-
 candidate_set = counts / trN > tau
-plt.scatter(X_corpus[candidate_set,0], X_corpus[candidate_set,1], c='#FFF681',
-            marker='o', cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+plt.scatter(X_corpus[:,0], X_corpus[:,1], c=candidate_set,
+            marker='o', cmap=cm, s=msize_corpus, vmin=0, vmax=1, edgecolors='k')
 
 plt.savefig("fig/fig2-candidate-set-multilabel.pdf")
 
