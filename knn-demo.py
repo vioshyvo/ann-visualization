@@ -87,6 +87,15 @@ plt.scatter(X_corpus[candidate_set,0], X_corpus[candidate_set,1], c='#FFF681',
 
 plt.savefig("fig/fig2-candidate-set.pdf")
 
+plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
+            cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+
+candidate_set = counts / trN > tau
+plt.scatter(X_corpus[candidate_set,0], X_corpus[candidate_set,1], c='#FFF681',
+            marker='o', cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
+
+plt.savefig("fig/fig2-candidate-set-multilabel.pdf")
+
 labs = [str(c)+'/'+str(trN) for c in counts]
 for i in range(len(labs)):
     plt.annotate(labs[i], xy=(X_corpus[i,0],X_corpus[i,1]), 
