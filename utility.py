@@ -53,6 +53,17 @@ def dist(a, b):
         sum = sum + (a[i] - b[i])**2
     return math.sqrt(sum)
 
+def knn(X_test, X_corpus, k):
+    for i in range(len(X_test)):
+        # calculate the distances to all training points
+        D = np.empty(len(X_corpus))
+        for j in range(len(X_corpus)):
+            D[j] = dist(X_corpus[j], X_test[i])
+                
+        # find the index of the nearest neighbor
+        return np.argsort(D)[:k]
+
+
 def nearest_neighbors(X_train, X_corpus, cell, k):
     counts = np.zeros(len(X_corpus), dtype=np.int64) 
     trN = 0

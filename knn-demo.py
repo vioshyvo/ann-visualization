@@ -6,7 +6,7 @@ Created on Mon Jul  6 17:27:38 2020
 @author: ttonteri
 """
 
-from utility import generate_toy_data, create_polygon, dist, nearest_neighbors
+from utility import generate_toy_data, create_polygon, nearest_neighbors, knn
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -24,16 +24,10 @@ X_test, Y_test = (np.array([[.5,.5]]), np.array([0]))
 # made up partition element
 cell = Polygon(create_polygon(X_test[0,0]-.145, X_test[0,1]+.0, 6, .295))
 
-for i in range(len(X_test)):
-    # calculate the distances to all training points
-    D = np.empty(len(X_corpus))
-    for j in range(len(X_corpus)):
-        D[j] = dist(X_corpus[j], X_test[i])
-            
-    # find the index of the nearest neighbor
-    near = np.argsort(D)[:k]
+# true knn of the query point
+near = knn(X_test, X_corpus, k)
 
-# do the nearest neighbors for the data in the cell
+# the nearest neighbors for the data in the cell
 counts, trN = nearest_neighbors(X_corpus, X_corpus, cell, k)
 
 # plot the chart
