@@ -23,11 +23,10 @@ training_set_sizes = [50, 250, 1000]
 k = 5   # set k=0 to just show the data
 M = 0.7                                                 
 n_0 = 8       
-tau = 0.2                                          # maximum leaf size
+tau = 0.2                                          
 method = 'PCA'
-show_counts = False
-X_corpus, Y_corpus = generate_toy_data(15)              # corpus
-X_test, Y_test = (np.array([[.5,.5]]), np.array([0]))   # query point
+X_corpus, Y_corpus = generate_toy_data(15)             
+X_test, Y_test = (np.array([[.5,.5]]), np.array([0]))   
 square = Polygon([(X_test[0][0]-M,X_test[0][1]-M), (X_test[0][0]-M,X_test[0][1]+M),
                 (X_test[0][0]+M,X_test[0][1]+M), (X_test[0][0]+M,X_test[0][1]-M)])
 n_max = training_set_sizes[len(training_set_sizes)-1]
@@ -105,15 +104,7 @@ for n in training_set_sizes:
 
     px, py = cell.exterior.xy
     plt.plot(px, py) # color='#3977AF'
-    
-    if show_counts:
-        labs = [str(c)+'/'+str(trN) for c in counts]
-        for i in range(len(labs)):
-            plt.annotate(labs[i], xy=(X_corpus[i,0],X_corpus[i,1]), 
-                         xytext=(0,8), textcoords='offset points',
-                         fontsize=8,
-                         horizontalalignment='center', verticalalignment='bottom')
-    
+        
     for i in np.arange(len(X_train)):
         if cell.contains(Point(X_train[i])):
             plt.scatter(X_train[i,0], X_train[i,1], c='#FFAFEC', s=30, edgecolors='k')
@@ -123,5 +114,14 @@ for n in training_set_sizes:
     plt.scatter(X_corpus[ann,0], X_corpus[ann,1], marker='o', 
                 cmap=cm, s=51, vmin=0, vmax=1, c='#FFF681', edgecolors='k')
 
-    plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-no_labels.pdf")
+    plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-candidate-set.pdf")
+
+    labs = [str(c)+'/'+str(trN) for c in counts]
+    for i in range(len(labs)):
+        plt.annotate(labs[i], xy=(X_corpus[i,0],X_corpus[i,1]), 
+                     xytext=(0,8), textcoords='offset points',
+                     fontsize=8,
+                     horizontalalignment='center', verticalalignment='bottom')
+
+    plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-counts.pdf")
 
