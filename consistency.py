@@ -6,7 +6,7 @@ Created on Mon Jul  6 17:27:38 2020
 @author: ttonteri
 """
 
-from utility import generate_toy_data, dist, nearest_neighbors
+from utility import generate_toy_data, nearest_neighbors, knn
 from mrpt import MRPT
 
 import numpy as np
@@ -38,18 +38,9 @@ for n in training_set_sizes:
 
     partition = MRPT(square, X_train, min_n=n_0, kd=method)
     [cell] = [part for part in partition if part.contains(Point(X_test[0]))]
-    
-    # place-holder for the predicted classes
-    Y_predict = np.empty(len(Y_test), dtype=np.int64)
         
-    for i in range(len(X_test)):
-        # calculate the distances to all training points
-        D = np.empty(len(X_corpus))
-        for j in range(len(X_corpus)):
-            D[j] = dist(X_corpus[j], X_test[i])
-                
-        # find the index of the nearest neighbor
-        near = np.argsort(D)[:k]
+    # true knn of the query point
+    near = knn(X_test, X_corpus, k)    
     
     # do the nearest neighbors for the data in the cell
     counts, trN = nearest_neighbors(X_train, X_corpus, cell, k)
@@ -70,15 +61,7 @@ for n in training_set_sizes:
         top=False,         # ticks along the top edge are off
         labelbottom=False) 
     
-    #fig.set_facecolor('#EBE9EF')
-    #cm = ListedColormap(['#5EC798', '#46479D'])
-    
-    #ax.set_facecolor('#FCFDF1')
     cm = ListedColormap(['#86B853', '#FFF681'])
-    
-    S = np.argsort(-counts)[:k]
-    #Y_corpus = [1 if c>2 else 0 for c in counts]
-    #Y_corpus[S] = 1
     
     if n == n_max:
         alpha = .5
@@ -86,7 +69,7 @@ for n in training_set_sizes:
         alpha = .7
     
     ann = counts / trN > tau
-    plt.scatter(X_train[:,0], X_train[:,1], c='#FFAFEC', s=30, alpha = alpha)
+    plt.scatter(X_train[:,0], X_train[:,1], color='#FFAFEC', s=30, alpha = alpha)
     plt.scatter(X_corpus[near,0], X_corpus[near,1], marker='o', 
                 cmap=cm, s=301, c='#F0B27A', edgecolors=None)
     plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_corpus, marker='o',
