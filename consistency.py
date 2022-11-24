@@ -62,26 +62,25 @@ for n in training_set_sizes:
         labelbottom=False) 
     
     cm = ListedColormap(['#86B853', '#FFF681'])
-    
-    if n == n_max:
-        alpha = .5
-    else:
-        alpha = .7
+    c_train = '#FFAFEC'
+    c_neighbor = '#F0B27A'
+    msize_corpus = 51
+    msize_query = 250
+    msize_neighbor = 301
+    msize_train = 30
+    alpha = 0.5 if n == n_max else 0.7
     
     ann = counts / trN > tau
-    plt.scatter(X_train[:,0], X_train[:,1], color='#FFAFEC', s=30, alpha = alpha)
+    plt.scatter(X_train[:,0], X_train[:,1], color=c_train, s=msize_train, alpha = alpha)
     plt.scatter(X_corpus[near,0], X_corpus[near,1], marker='o', 
-                cmap=cm, s=301, c='#F0B27A', edgecolors=None)
+                cmap=cm, s=msize_neighbor, color=c_neighbor, edgecolors=None)
     plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_corpus, marker='o',
-                cmap=cm, s=51, vmin=0, vmax=1, edgecolors='k')
-    plt.scatter(X_test[:,0], X_test[:,1], c='#FFF681', marker='*', 
-                cmap=cm, s=250, vmin=0, vmax=1, edgecolors='k')
+                cmap=cm, s=msize_corpus, vmin=0, vmax=1, edgecolors='k')
+    plt.scatter(X_test[:,0], X_test[:,1], c=1, marker='*', 
+                cmap=cm, s=msize_query, vmin=0, vmax=1, edgecolors='k')
     
     for part in partition:
         ax.plot(*part.exterior.xy, color='#3977AF', alpha = 0.1)
-        
-    plt.scatter(X_test[:,0], X_test[:,1], marker='*',
-                s=220, vmin=0, vmax=1, facecolors='#FFF681', edgecolors='k')
     
     plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency.pdf")
 
@@ -90,12 +89,12 @@ for n in training_set_sizes:
         
     for i in np.arange(len(X_train)):
         if cell.contains(Point(X_train[i])):
-            plt.scatter(X_train[i,0], X_train[i,1], c='#FFAFEC', s=30, edgecolors='k')
+            plt.scatter(X_train[i,0], X_train[i,1], color=c_train, s=msize_train, edgecolors='k')
 
     plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-highlighted.pdf")
             
-    plt.scatter(X_corpus[ann,0], X_corpus[ann,1], marker='o', 
-                cmap=cm, s=51, vmin=0, vmax=1, c='#FFF681', edgecolors='k')
+    plt.scatter(X_corpus[:,0], X_corpus[:,1], marker='o', 
+                cmap=cm, s=msize_corpus, vmin=0, vmax=1, c=ann, edgecolors='k')
 
     plt.savefig("fig/fig-" + method + "-n_0-" + str(n_0)  + "-n-" + str(n) + "-consistency-cell-candidate-set.pdf")
 

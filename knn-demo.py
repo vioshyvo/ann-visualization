@@ -33,7 +33,8 @@ counts, trN = nearest_neighbors(X_corpus, X_corpus, cell, k)
 # plot the chart
 cm = ListedColormap(['#86B853', '#FFF681'])
 msize_corpus = 51
-msize_neighbor = 250
+msize_query = 250
+msize_neighbor = 301
 
 fig = plt.figure(figsize=(6,6))
 fig.set_tight_layout(True)
@@ -51,12 +52,12 @@ plt.tick_params(
 plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
             cmap=cm, s=msize_corpus, vmin=0, vmax=1, edgecolors='k')
 plt.scatter(X_test[:,0], X_test[:,1], c=1, marker='*', 
-            cmap=cm, s=msize_neighbor, vmin=0, vmax=1, edgecolors='k')
+            cmap=cm, s=msize_query, vmin=0, vmax=1, edgecolors='k')
 
 plt.savefig("fig/fig2-plain.pdf")
 
 plt.scatter(X_corpus[near,0], X_corpus[near,1], marker='o', 
-            cmap=cm, s=301, c='#F0B27A', edgecolors=None)
+            cmap=cm, s=msize_neighbor, c='#F0B27A', edgecolors=None)
 plt.scatter(X_corpus[:,0], X_corpus[:,1], c=Y_train, marker='o',
             cmap=cm, s=msize_corpus, vmin=0, vmax=1, edgecolors='k')
 
