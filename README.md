@@ -15,11 +15,13 @@ To generate a figure of corpus, query point, 5-nn of the query and the partition
 
 To generate partitions and candidate sets with different training set sizes, run
 ```plot-consistency
-./knn_demo.py
+./consistency.py
 ```
-
+PCA tree with `n=50`:
 ![Illustration of corpus, query point, nearest neighbors & a partition element](fig/fig-PCA-n_0-8-n-50-consistency-cell-candidate-set.png)
 
+PCA tree with `n=250`:
 ![Illustration of corpus, query point, nearest neighbors & a partition element](fig/fig-PCA-n_0-8-n-250-consistency-cell-candidate-set.png)
 
+PCA tree with `n=1000`:
 ![Illustration of corpus, query point, nearest neighbors & a partition element](fig/fig-PCA-n_0-8-n-1000-consistency-cell-candidate-set.png)
